@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kriya Timer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --bg2: #ece5d5;
+    --ink: #2c2416;
+    --ink-light: #8a7a60;
+    --gold: #b8935a;
+    --gold-light: #d4b483;
+    --accent: #7a6248;
+    --danger: #b85a5a;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 40px 0;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grain texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+  }
+
+  .container { width: 100%; max-width: 480px; padding: 0 20px; position: relative; z-index: 1; }
+
+  header {
+    text-align: center;
+    padding: 36px 0 20px;
+  }
+
+  header .symbol {
+    font-size: 28px;
+    opacity: 0.5;
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 2.2rem;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+  }
+
+  header p {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 6px;
+  }
+
+  /* === TIMER DISPLAY === */
+  .timer-display {
+    background: var(--bg2);
+    border-radius: var(--radius);
+    padding: 28px 20px 22px;
+    margin: 16px 0;
+    text-align: center;
+    border: 1px solid rgba(184,147,90,0.2);
+    box-shadow: 0 2px 20px rgba(44,36,22,0.06);
+  }
+
+  .kriya-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    min-height: 1.5em;
+    transition: opacity 0.4s;
+  }
+
+  .time-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5.5rem;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    transition: color 0.3s;
+  }
+
+  .time-big.urgent { color: var(--danger); }
+
+  .progress-wrap {
+    margin: 16px 0 8px;
+    height: 3px;
+    background: rgba(138,122,96,0.2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+    border-radius: 99px;
+    transition: width 1s linear;
+    width: 0%;
+  }
+
+  .kriya-index {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 4px;
+  }
+
+  /* === CONTROLS === */
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin: 4px 0 18px;
+  }
+
+  .btn {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 10px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .btn:active { transform: scale(0.96); }
+
+  .btn-primary {
+    background: var(--gold);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(184,147,90,0.35);
+  }
+
+  .btn-primary:hover { background: var(--accent); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-light);
+    border: 1px solid rgba(138,122,96,0.35);
+  }
+
+  .btn-secondary:hover { background: var(--bg2); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(184,90,90,0.3);
+  }
+
+  /* === KRIYA LIST (edit mode) === */
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin: 4px 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .section-label span { cursor: pointer; color: var(--gold); }
+
+  .kriya-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .kriya-item {
+    background: var(--bg2);
+    border-radius: 12px;
+    border: 1px solid rgba(184,147,90,0.15);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 1px 6px rgba(44,36,22,0.04);
+    transition: border-color 0.2s;
+  }
+
+  .kriya-item.active-kriya {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(184,147,90,0.18);
+  }
+
+  .kriya-item input {
+    background: transparent;
+    border: none;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--ink);
+    outline: none;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .kriya-item input::placeholder { color: var(--ink-light); font-style: italic; }
+
+  .time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .time-inputs input {
+    width: 38px;
+    text-align: center;
+    background: rgba(184,147,90,0.1);
+    border: 1px solid rgba(184,147,90,0.25);
+    border-radius: 6px;
+    padding: 4px 2px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+  }
+
+  .time-inputs input:focus { border-color: var(--gold); }
+  .time-inputs input::-webkit-inner-spin-button,
+  .time-inputs input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  .time-inputs .sep { color: var(--ink-light); font-size: 0.85rem; }
+
+  .drag-handle {
+    color: var(--ink-light);
+    font-size: 1rem;
+    cursor: grab;
+    opacity: 0.4;
+    padding: 0 2px;
+    user-select: none;
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--ink-light);
+    cursor: pointer;
+    font-size: 1.1rem;
+    opacity: 0.5;
+    padding: 2px 4px;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .remove-btn:hover { opacity: 1; color: var(--danger); }
+
+  .add-btn {
+    width: 100%;
+    border: 1.5px dashed rgba(184,147,90,0.4);
+    background: transparent;
+    border-radius: 12px;
+    padding: 12px;
+    color: var(--gold);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.2s;
+  }
+  .add-btn:hover { background: rgba(184,147,90,0.07); }
+
+  /* === TOTAL TIME === */
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 2px 0;
+    border-top: 1px solid rgba(138,122,96,0.18);
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    letter-spacing: 0.08em;
+  }
+
+  .total-row strong {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  /* === COMPLETED STATE === */
+  .completed-msg {
+    text-align: center;
+    padding: 24px 0;
+    display: none;
+  }
+
+  .completed-msg .symbol { font-size: 2.5rem; margin-bottom: 10px; }
+
+  .completed-msg h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 1.8rem;
+    color: var(--gold);
+  }
+
+  .completed-msg p {
+    color: var(--ink-light);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* Ripple on chime */
+  @keyframes ripple {
+    0% { box-shadow: 0 0 0 0 rgba(184,147,90,0.5); }
+    100% { box-shadow: 0 0 0 30px rgba(184,147,90,0); }
+  }
+
+  .chime-flash { animation: ripple 0.8s ease-out; }
+
+  footer {
+    margin-top: 28px;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(138,122,96,0.45);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <span class="symbol">☽ ✦ ☾</span>
+    <h1>Kriya Timer</h1>
+    <p>Sequential meditation sequences</p>
+  </header>
+
+  <!-- Timer Display -->
+  <div class="timer-display" id="timerDisplay">
+    <div class="kriya-name" id="currentKriyaName">Ready</div>
+    <div class="time-big" id="timeBig">00:00</div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="kriya-index" id="kriyaIndex">Set your kriyas below</div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="controls">
+    <button class="btn btn-primary" id="startBtn" onclick="startTimer()">Start</button>
+    <button class="btn btn-secondary" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
+    <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+  </div>
+
+  <!-- Completed message -->
+  <div class="completed-msg" id="completedMsg">
+    <div class="symbol">🔔</div>
+    <h2>Session Complete</h2>
+    <p>All kriyas finished · Well done</p>
+  </div>
+
+  <!-- Kriya List -->
+  <div class="section-label">
+    Kriya Sequence
+  </div>
+
+  <div class="kriya-list" id="kriyaList"></div>
+
+  <button class="add-btn" onclick="addKriya()">+ Add Kriya</button>
+
+  <div class="total-row">
+    <span>Total Duration</span>
+    <strong id="totalTime">0 min</strong>
+  </div>
+
+  <footer>Tap a name or time to edit · Sounds via Web Audio API</footer>
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────
+let kriyas = [
+  { name: "Tuning In (Ong Namo)", mins: 3, secs: 0 },
+  { name: "Pranayama Warm-up", mins: 7, secs: 0 },
+  { name: "Sat Kriya", mins: 5, secs: 0 },
+  { name: "Meditation", mins: 11, secs: 0 },
+  { name: "Deep Relaxation", mins: 5, secs: 0 },
+];
+
+let timerInterval = null;
+let currentIndex = 0;
+let remaining = 0;
+let running = false;
+let audioCtx = null;
+
+// ─── Audio ────────────────────────────────────────────────
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playChime(volume = 0.6) {
+  try {
+    const ctx = getAudioCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+
+    // Three harmonically related tones for a gentle bell
+    const freqs = [659.3, 987.8, 1318.5]; // E5, B5, E6
+    freqs.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const now = ctx.currentTime + i * 0.04;
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.997, now + 2);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume / (i + 1.2), now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+
+      osc.start(now);
+      osc.stop(now + 3);
+    });
+
+    // Visual flash
+    const td = document.getElementById('timerDisplay');
+    td.classList.remove('chime-flash');
+    void td.offsetWidth;
+    td.classList.add('chime-flash');
+  } catch(e) {}
+}
+
+// ─── Timer logic ──────────────────────────────────────────
+function getTotalSeconds(k) {
+  return (parseInt(k.mins) || 0) * 60 + (parseInt(k.secs) || 0);
+}
+
+function startTimer() {
+  if (kriyas.length === 0) return;
+  
+  // Unlock audio on first user gesture
+  getAudioCtx();
+
+  if (!running) {
+    if (remaining === 0) {
+      // Fresh start
+      currentIndex = 0;
+      remaining = getTotalSeconds(kriyas[0]);
+      if (remaining === 0) { advanceKriya(); return; }
+    }
+    running = true;
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('pauseBtn').disabled = false;
+    timerInterval = setInterval(tick, 1000);
+    updateDisplay();
+    renderList();
+  }
+}
+
+function pauseTimer() {
+  if (!running) return;
+  running = false;
+  clearInterval(timerInterval);
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('startBtn').textContent = 'Resume';
+}
+
+function resetTimer() {
+  running = false;
+  clearInterval(timerInterval);
+  currentIndex = 0;
+  remaining = 0;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('startBtn').textContent = 'Start';
+  document.getElementById('completedMsg').style.display = 'none';
+  document.getElementById('timerDisplay').style.display = '';
+  document.getElementById('timeBig').classList.remove('urgent');
+  updateDisplay();
+  renderList();
+}
+
+function tick() {
+  remaining--;
+  if (remaining <= 0) {
+    playChime();
+    advanceKriya();
+  } else {
+    updateDisplay();
+  }
+}
+
+function advanceKriya() {
+  currentIndex++;
+  if (currentIndex >= kriyas.length) {
+    // All done
+    running = false;
+    clearInterval(timerInterval);
+    document.getElementById('timerDisplay').style.display = 'none';
+    document.getElementById('completedMsg').style.display = 'block';
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('pauseBtn').disabled = true;
+    document.getElementById('startBtn').textContent = 'Start';
+    renderList();
+    return;
+  }
+  remaining = getTotalSeconds(kriyas[currentIndex]);
+  if (remaining === 0) { advanceKriya(); return; }
+  updateDisplay();
+  renderList();
+}
+
+function updateDisplay() {
+  const k = kriyas[currentIndex];
+  if (!k) return;
+
+  const total = getTotalSeconds(k);
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  document.getElementById('timeBig').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  document.getElementById('currentKriyaName').textContent = k.name || `Kriya ${currentIndex+1}`;
+  document.getElementById('kriyaIndex').textContent =
+    `${currentIndex+1} of ${kriyas.length}`;
+
+  const pct = total > 0 ? ((total - remaining) / total) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  const urgent = remaining <= 10 && remaining > 0;
+  document.getElementById('timeBig').classList.toggle('urgent', urgent);
+}
+
+// ─── Render list ──────────────────────────────────────────
+function renderList() {
+  const list = document.getElementById('kriyaList');
+  list.innerHTML = '';
+  kriyas.forEach((k, i) => {
+    const el = document.createElement('div');
+    el.className = 'kriya-item' + (running && i === currentIndex ? ' active-kriya' : '');
+
+    const mins = String(parseInt(k.mins) || 0).padStart(2,'0');
+    const secs = String(parseInt(k.secs) || 0).padStart(2,'0');
+
+    el.innerHTML = `
+      <span class="drag-handle">⠿</span>
+      <input type="text" placeholder="Kriya name…" value="${escHtml(k.name)}" 
+             oninput="kriyas[${i}].name='${escJs()}';updateDisplay();updateTotal()" 
+             onchange="kriyas[${i}].name=this.value;updateDisplay();updateTotal()">
+      <div class="time-inputs">
+        <input type="number" min="0" max="99" value="${mins}" 
+               onchange="kriyas[${i}].mins=this.value;updateDisplay();updateTotal()">
+        <span class="sep">:</span>
+        <input type="number" min="0" max="59" value="${secs}" 
+               onchange="kriyas[${i}].secs=this.value;updateDisplay();updateTotal()">
+      </div>
+      <button class="remove-btn" onclick="removeKriya(${i})">✕</button>
+    `;
+
+    // Fix the name binding properly
+    const nameInput = el.querySelector('input[type=text]');
+    nameInput.addEventListener('input', function() {
+      kriyas[i].name = this.value;
+      updateDisplay();
+    });
+
+    list.appendChild(el);
+  });
+  updateTotal();
+
+  // If not running, reset display to first kriya
+  if (!running && remaining === 0 && kriyas.length > 0) {
+    const k0 = kriyas[0];
+    const total = getTotalSeconds(k0);
+    const m = Math.floor(total / 60), s = total % 60;
+    document.getElementById('timeBig').textContent =
+      String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    document.getElementById('currentKriyaName').textContent = k0.name || 'Kriya 1';
+    document.getElementById('kriyaIndex').textContent = `1 of ${kriyas.length}`;
+    document.getElementById('progressBar').style.width = '0%';
+  }
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+function escJs() { return ''; } // placeholder, real binding done in addEventListener
+
+function addKriya() {
+  kriyas.push({ name: '', mins: 5, secs: 0 });
+  renderList();
+  // Focus the new name input
+  const items = document.querySelectorAll('.kriya-item');
+  const last = items[items.length - 1];
+  if (last) last.querySelector('input[type=text]').focus();
+}
+
+function removeKriya(i) {
+  if (kriyas.length === 1) return; // keep at least one
+  kriyas.splice(i, 1);
+  if (currentIndex >= kriyas.length) currentIndex = kriyas.length - 1;
+  renderList();
+  if (!running && remaining === 0) {
+    remaining = 0;
+    updateDisplay();
+  }
+}
+
+function updateTotal() {
+  const total = kriyas.reduce((acc, k) => acc + getTotalSeconds(k), 0);
+  const m = Math.floor(total / 60), s = total % 60;
+  document.getElementById('totalTime').textContent =
+    s > 0 ? `${m} min ${s} sec` : `${m} min`;
+}
+
+// ─── Init ─────────────────────────────────────────────────
+renderList();
+</script>
+</body>
+</html>
