@@ -29,11 +29,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 0 40px 0;
+    padding: 0 0 50px 0;
     overflow-x: hidden;
   }
 
-  /* Subtle grain texture */
   body::before {
     content: '';
     position: fixed;
@@ -46,9 +45,10 @@
 
   .container { width: 100%; max-width: 480px; padding: 0 20px; position: relative; z-index: 1; }
 
-  header {
-    text-align: center;
-    padding: 36px 0 20px;
+  header { text-align: center; padding: 36px 0 20px; }
+
+  .swastika-wrap {
+    margin-bottom: 10px;
   }
 
   header .symbol {
@@ -75,12 +75,17 @@
     margin-top: 6px;
   }
 
-  /* === TIMER DISPLAY === */
+  .divider {
+    width: 55px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    margin: 7px auto 0;
+  }
+
   .timer-display {
     background: var(--bg2);
     border-radius: var(--radius);
-    padding: 28px 20px 22px;
-    margin: 16px 0;
+    padding: 24px 20px 20px;
+    margin: 14px 0;
     text-align: center;
     border: 1px solid rgba(184,147,90,0.2);
     box-shadow: 0 2px 20px rgba(44,36,22,0.06);
@@ -94,7 +99,6 @@
     letter-spacing: 0.05em;
     margin-bottom: 6px;
     min-height: 1.5em;
-    transition: opacity 0.4s;
   }
 
   .time-big {
@@ -106,15 +110,12 @@
     color: var(--ink);
     transition: color 0.3s;
   }
-
   .time-big.urgent { color: var(--danger); }
 
   .progress-wrap {
-    margin: 16px 0 8px;
-    height: 3px;
+    margin: 14px 0 8px; height: 3px;
     background: rgba(138,122,96,0.2);
-    border-radius: 99px;
-    overflow: hidden;
+    border-radius: 99px; overflow: hidden;
   }
 
   .progress-bar {
@@ -126,72 +127,30 @@
   }
 
   .kriya-index {
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    margin-top: 4px;
+    font-size: 0.72rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ink-light); margin-top: 4px;
   }
 
-  /* === CONTROLS === */
-  .controls {
-    display: flex;
-    gap: 12px;
-    margin: 4px 0 18px;
-  }
+  .controls { display: flex; gap: 12px; margin: 4px 0 16px; }
 
   .btn {
-    flex: 1;
-    border: none;
-    border-radius: 12px;
-    padding: 15px 10px;
-    font-family: 'Jost', sans-serif;
-    font-weight: 300;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    -webkit-appearance: none;
+    flex: 1; border: none; border-radius: 12px;
+    padding: 14px 10px;
+    font-family: 'Jost', sans-serif; font-weight: 300;
+    font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; -webkit-appearance: none;
   }
-
   .btn:active { transform: scale(0.96); }
-
-  .btn-primary {
-    background: var(--gold);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(184,147,90,0.35);
-  }
-
+  .btn-primary { background: var(--gold); color: #fff; box-shadow: 0 4px 16px rgba(184,147,90,0.35); }
   .btn-primary:hover { background: var(--accent); }
-
-  .btn-secondary {
-    background: transparent;
-    color: var(--ink-light);
-    border: 1px solid rgba(138,122,96,0.35);
-  }
-
+  .btn-secondary { background: transparent; color: var(--ink-light); border: 1px solid rgba(138,122,96,0.35); }
   .btn-secondary:hover { background: var(--bg2); }
 
-  .btn-danger {
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid rgba(184,90,90,0.3);
-  }
-
-  /* === KRIYA LIST (edit mode) === */
   .section-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ink-light);
+    font-size: 0.68rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-light);
     margin: 4px 0 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
-
-  .section-label span { cursor: pointer; color: var(--gold); }
 
   .kriya-list { display: flex; flex-direction: column; gap: 10px; }
 
@@ -199,170 +158,139 @@
     background: var(--bg2);
     border-radius: 12px;
     border: 1px solid rgba(184,147,90,0.15);
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 11px 12px;
+    display: flex; align-items: center; gap: 8px;
     box-shadow: 0 1px 6px rgba(44,36,22,0.04);
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, opacity 0.15s;
+    position: relative;
   }
+  .kriya-item.active-kriya { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,147,90,0.18); }
+  .kriya-item.dragging     { opacity: 0.45; border-color: var(--gold); }
+  .kriya-item.drag-over    { border-color: var(--gold-light); background: #e8dfc8; }
 
-  .kriya-item.active-kriya {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 2px rgba(184,147,90,0.18);
+  .kriya-item input[type=text] {
+    background: transparent; border: none;
+    font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+    color: var(--ink); outline: none; flex: 1; min-width: 0;
   }
+  .kriya-item input[type=text]::placeholder { color: var(--ink-light); font-style: italic; }
 
-  .kriya-item input {
-    background: transparent;
-    border: none;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    color: var(--ink);
-    outline: none;
-    flex: 1;
-    min-width: 0;
-  }
+  .time-inputs { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
 
-  .kriya-item input::placeholder { color: var(--ink-light); font-style: italic; }
-
-  .time-inputs {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-
-  .time-inputs input {
-    width: 38px;
-    text-align: center;
+  .time-inputs input[type=number] {
+    width: 36px; text-align: center;
     background: rgba(184,147,90,0.1);
     border: 1px solid rgba(184,147,90,0.25);
-    border-radius: 6px;
-    padding: 4px 2px;
-    font-family: 'Jost', sans-serif;
-    font-size: 0.85rem;
-    color: var(--ink);
-    outline: none;
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
+    border-radius: 6px; padding: 4px 2px;
+    font-family: 'Jost', sans-serif; font-size: 0.83rem;
+    color: var(--ink); outline: none;
+    -webkit-appearance: none; -moz-appearance: textfield;
   }
-
-  .time-inputs input:focus { border-color: var(--gold); }
-  .time-inputs input::-webkit-inner-spin-button,
-  .time-inputs input::-webkit-outer-spin-button { -webkit-appearance: none; }
-
+  .time-inputs input[type=number]:focus { border-color: var(--gold); }
+  .time-inputs input[type=number]::-webkit-inner-spin-button,
+  .time-inputs input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
   .time-inputs .sep { color: var(--ink-light); font-size: 0.85rem; }
 
   .drag-handle {
-    color: var(--ink-light);
-    font-size: 1rem;
-    cursor: grab;
-    opacity: 0.4;
-    padding: 0 2px;
-    user-select: none;
+    color: var(--ink-light); font-size: 1.1rem;
+    cursor: grab; opacity: 0.5;
+    padding: 6px 4px; flex-shrink: 0; line-height: 1;
+    /* Make touch target bigger for mobile */
+    min-width: 24px; text-align: center;
   }
 
   .remove-btn {
-    background: none;
-    border: none;
-    color: var(--ink-light);
-    cursor: pointer;
-    font-size: 1.1rem;
-    opacity: 0.5;
-    padding: 2px 4px;
-    transition: opacity 0.15s, color 0.15s;
-    flex-shrink: 0;
+    background: none; border: none;
+    color: var(--ink-light); cursor: pointer;
+    font-size: 1rem; opacity: 0.45;
+    padding: 4px 4px;
+    transition: opacity 0.15s, color 0.15s; flex-shrink: 0;
   }
-  .remove-btn:hover { opacity: 1; color: var(--danger); }
+  .remove-btn:hover, .remove-btn:active { opacity: 1; color: var(--danger); }
 
   .add-btn {
-    width: 100%;
-    border: 1.5px dashed rgba(184,147,90,0.4);
-    background: transparent;
-    border-radius: 12px;
-    padding: 12px;
-    color: var(--gold);
-    font-family: 'Jost', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-top: 6px;
-    transition: all 0.2s;
+    width: 100%; border: 1.5px dashed rgba(184,147,90,0.4);
+    background: transparent; border-radius: 12px;
+    padding: 11px; color: var(--gold);
+    font-family: 'Jost', sans-serif; font-size: 0.78rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; margin-top: 6px; transition: all 0.2s;
   }
-  .add-btn:hover { background: rgba(184,147,90,0.07); }
+  .add-btn:hover, .add-btn:active { background: rgba(184,147,90,0.07); }
 
-  /* === TOTAL TIME === */
   .total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
     padding: 10px 2px 0;
-    border-top: 1px solid rgba(138,122,96,0.18);
-    margin-top: 12px;
-    font-size: 0.78rem;
-    color: var(--ink-light);
-    letter-spacing: 0.08em;
+    border-top: 1px solid rgba(138,122,96,0.18); margin-top: 12px;
+    font-size: 0.78rem; color: var(--ink-light); letter-spacing: 0.08em;
   }
-
   .total-row strong {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--gold);
+    font-size: 1rem; font-weight: 400; color: var(--gold);
   }
 
-  /* === COMPLETED STATE === */
-  .completed-msg {
-    text-align: center;
-    padding: 24px 0;
-    display: none;
-  }
-
-  .completed-msg .symbol { font-size: 2.5rem; margin-bottom: 10px; }
-
+  .completed-msg { text-align: center; padding: 24px 0; display: none; }
+  .completed-msg .sym { font-size: 2.5rem; margin-bottom: 10px; }
   .completed-msg h2 {
     font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: 1.8rem;
-    color: var(--gold);
+    font-weight: 300; font-size: 1.8rem; color: var(--gold);
   }
+  .completed-msg p { color: var(--ink-light); font-size: 0.82rem; letter-spacing: 0.1em; margin-top: 6px; }
 
-  .completed-msg p {
-    color: var(--ink-light);
-    font-size: 0.82rem;
-    letter-spacing: 0.1em;
-    margin-top: 6px;
-  }
-
-  /* Ripple on chime */
   @keyframes ripple {
-    0% { box-shadow: 0 0 0 0 rgba(184,147,90,0.5); }
-    100% { box-shadow: 0 0 0 30px rgba(184,147,90,0); }
+    0%   { box-shadow: 0 0 0 0 rgba(184,147,90,0.55); }
+    100% { box-shadow: 0 0 0 28px rgba(184,147,90,0); }
   }
-
-  .chime-flash { animation: ripple 0.8s ease-out; }
+  .chime-flash { animation: ripple 0.7s ease-out; }
 
   footer {
-    margin-top: 28px;
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(138,122,96,0.45);
-    text-align: center;
+    margin-top: 28px; font-size: 0.62rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(138,122,96,0.4); text-align: center;
+  }
+
+  /* Ghost during drag */
+  #drag-ghost {
+    position: fixed; pointer-events: none; z-index: 9999;
+    border-radius: 12px;
+    box-shadow: 0 10px 32px rgba(44,36,22,0.22);
+    opacity: 0.9;
+    background: var(--bg2);
+    border: 1px solid var(--gold);
+    padding: 11px 12px;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--ink);
   }
 </style>
 </head>
 <body>
-
 <div class="container">
+
   <header>
+    <!-- Auspicious Hindu swastika (右卐, clockwise, traditional) -->
+    <div class="swastika-wrap">
+      <svg width="38" height="38" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" opacity="0.55">
+        <g fill="#b8935a">
+          <!-- Horizontal bar -->
+          <rect x="5"  y="17" width="30" height="6" rx="1"/>
+          <!-- Vertical bar -->
+          <rect x="17" y="5"  width="6"  height="30" rx="1"/>
+          <!-- Top-right arm -->
+          <rect x="23" y="5"  width="12" height="6" rx="1"/>
+          <!-- Right-bottom arm -->
+          <rect x="29" y="23" width="6"  height="12" rx="1"/>
+          <!-- Bottom-left arm -->
+          <rect x="5"  y="29" width="12" height="6" rx="1"/>
+          <!-- Left-top arm -->
+          <rect x="5"  y="5"  width="6"  height="12" rx="1"/>
+        </g>
+      </svg>
+    </div>
     <span class="symbol">☽ ✦ ☾</span>
     <h1>Kriya Timer</h1>
     <p>Sequential meditation sequences</p>
+    <div class="divider"></div>
   </header>
 
-  <!-- Timer Display -->
   <div class="timer-display" id="timerDisplay">
     <div class="kriya-name" id="currentKriyaName">Ready</div>
     <div class="time-big" id="timeBig">00:00</div>
@@ -370,27 +298,20 @@
     <div class="kriya-index" id="kriyaIndex">Set your kriyas below</div>
   </div>
 
-  <!-- Buttons -->
   <div class="controls">
     <button class="btn btn-primary" id="startBtn" onclick="startTimer()">Start</button>
     <button class="btn btn-secondary" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
     <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
   </div>
 
-  <!-- Completed message -->
   <div class="completed-msg" id="completedMsg">
-    <div class="symbol">🔔</div>
+    <div class="sym">🔔</div>
     <h2>Session Complete</h2>
-    <p>All kriyas finished · Well done</p>
+    <p>All kriyas finished · Namaskaram</p>
   </div>
 
-  <!-- Kriya List -->
-  <div class="section-label">
-    Kriya Sequence
-  </div>
-
+  <div class="section-label">Kriya Sequence</div>
   <div class="kriya-list" id="kriyaList"></div>
-
   <button class="add-btn" onclick="addKriya()">+ Add Kriya</button>
 
   <div class="total-row">
@@ -398,59 +319,68 @@
     <strong id="totalTime">0 min</strong>
   </div>
 
-  <footer>Tap a name or time to edit · Sounds via Web Audio API</footer>
+  <footer>Hold ⠿ and drag to reorder · Tap fields to edit</footer>
 </div>
 
+<!-- Ghost element for drag -->
+<div id="drag-ghost" style="display:none"></div>
+
 <script>
-// ─── State ────────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────
 let kriyas = [
-  { name: "Tuning In (Ong Namo)", mins: 3, secs: 0 },
-  { name: "Pranayama Warm-up", mins: 7, secs: 0 },
-  { name: "Sat Kriya", mins: 5, secs: 0 },
-  { name: "Meditation", mins: 11, secs: 0 },
-  { name: "Deep Relaxation", mins: 5, secs: 0 },
+  { name: "Sukha Kriya",        mins: 6, secs: 30 },
+  { name: "Aum Chanting",       mins: 5, secs: 0  },
+  { name: "Vhiparata Shwasan",  mins: 4, secs: 0  },
+  { name: "Bhandas",            mins: 1, secs: 0  },
+  { name: "Breath Concentrate", mins: 4, secs: 30 },
 ];
 
 let timerInterval = null;
-let currentIndex = 0;
-let remaining = 0;
-let running = false;
-let audioCtx = null;
+let currentIndex  = 0;
+let remaining     = 0;
+let running       = false;
+let audioCtx      = null;
 
-// ─── Audio ────────────────────────────────────────────────
+// ── Audio — sharp temple bell, dies within 3 sec ──────────
 function getAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
 }
 
-function playChime(volume = 0.6) {
+function playTempleBell() {
   try {
     const ctx = getAudioCtx();
     if (ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
 
-    // Three harmonically related tones for a gentle bell
-    const freqs = [659.3, 987.8, 1318.5]; // E5, B5, E6
-    freqs.forEach((freq, i) => {
+    // Temple bell partials: fundamental + inharmonic clang (ratio 2.756) + shimmer
+    // Total duration capped at 3 sec via fast exponential decay
+    const partials = [
+      { freq: 392.0,        amp: 0.60, decay: 2.6 },  // G4 fundamental
+      { freq: 392.0 * 2,    amp: 0.22, decay: 1.8 },  // octave
+      { freq: 392.0 * 2.756,amp: 0.20, decay: 1.4 },  // inharmonic clang
+      { freq: 392.0 * 5.4,  amp: 0.07, decay: 0.8 },  // high shimmer
+    ];
+
+    partials.forEach(p => {
       const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const now = ctx.currentTime + i * 0.04;
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+      const gn  = ctx.createGain();
+      osc.connect(gn); gn.connect(ctx.destination);
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, now);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.997, now + 2);
+      osc.frequency.setValueAtTime(p.freq, now);
+      // Tiny pitch sag after strike — realistic bell behaviour
+      osc.frequency.exponentialRampToValueAtTime(p.freq * 0.998, now + p.decay);
 
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(volume / (i + 1.2), now + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+      gn.gain.setValueAtTime(0, now);
+      gn.gain.linearRampToValueAtTime(p.amp, now + 0.004);    // instant strike
+      gn.gain.exponentialRampToValueAtTime(0.0001, now + p.decay);
 
       osc.start(now);
-      osc.stop(now + 3);
+      osc.stop(now + p.decay + 0.05);
     });
 
-    // Visual flash
+    // Visual pulse
     const td = document.getElementById('timerDisplay');
     td.classList.remove('chime-flash');
     void td.offsetWidth;
@@ -458,20 +388,16 @@ function playChime(volume = 0.6) {
   } catch(e) {}
 }
 
-// ─── Timer logic ──────────────────────────────────────────
+// ── Timer logic ───────────────────────────────────────────
 function getTotalSeconds(k) {
   return (parseInt(k.mins) || 0) * 60 + (parseInt(k.secs) || 0);
 }
 
 function startTimer() {
-  if (kriyas.length === 0) return;
-  
-  // Unlock audio on first user gesture
+  if (!kriyas.length) return;
   getAudioCtx();
-
   if (!running) {
     if (remaining === 0) {
-      // Fresh start
       currentIndex = 0;
       remaining = getTotalSeconds(kriyas[0]);
       if (remaining === 0) { advanceKriya(); return; }
@@ -480,168 +406,261 @@ function startTimer() {
     document.getElementById('startBtn').disabled = true;
     document.getElementById('pauseBtn').disabled = false;
     timerInterval = setInterval(tick, 1000);
-    updateDisplay();
-    renderList();
+    updateDisplay(); renderList();
   }
 }
 
 function pauseTimer() {
   if (!running) return;
-  running = false;
-  clearInterval(timerInterval);
+  running = false; clearInterval(timerInterval);
   document.getElementById('startBtn').disabled = false;
   document.getElementById('pauseBtn').disabled = true;
   document.getElementById('startBtn').textContent = 'Resume';
 }
 
 function resetTimer() {
-  running = false;
-  clearInterval(timerInterval);
-  currentIndex = 0;
-  remaining = 0;
+  running = false; clearInterval(timerInterval);
+  currentIndex = 0; remaining = 0;
   document.getElementById('startBtn').disabled = false;
   document.getElementById('pauseBtn').disabled = true;
   document.getElementById('startBtn').textContent = 'Start';
   document.getElementById('completedMsg').style.display = 'none';
   document.getElementById('timerDisplay').style.display = '';
   document.getElementById('timeBig').classList.remove('urgent');
-  updateDisplay();
-  renderList();
+  updateDisplay(); renderList();
 }
 
 function tick() {
   remaining--;
-  if (remaining <= 0) {
-    playChime();
-    advanceKriya();
-  } else {
-    updateDisplay();
-  }
+  if (remaining <= 0) { playTempleBell(); advanceKriya(); }
+  else updateDisplay();
 }
 
 function advanceKriya() {
   currentIndex++;
   if (currentIndex >= kriyas.length) {
-    // All done
-    running = false;
-    clearInterval(timerInterval);
+    running = false; clearInterval(timerInterval);
     document.getElementById('timerDisplay').style.display = 'none';
     document.getElementById('completedMsg').style.display = 'block';
     document.getElementById('startBtn').disabled = false;
     document.getElementById('pauseBtn').disabled = true;
     document.getElementById('startBtn').textContent = 'Start';
-    renderList();
-    return;
+    renderList(); return;
   }
   remaining = getTotalSeconds(kriyas[currentIndex]);
   if (remaining === 0) { advanceKriya(); return; }
-  updateDisplay();
-  renderList();
+  updateDisplay(); renderList();
 }
 
 function updateDisplay() {
   const k = kriyas[currentIndex];
   if (!k) return;
-
   const total = getTotalSeconds(k);
-  const m = Math.floor(remaining / 60);
-  const s = remaining % 60;
-  document.getElementById('timeBig').textContent =
-    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  const m = Math.floor(remaining / 60), s = remaining % 60;
+  document.getElementById('timeBig').textContent = pad(m) + ':' + pad(s);
   document.getElementById('currentKriyaName').textContent = k.name || `Kriya ${currentIndex+1}`;
-  document.getElementById('kriyaIndex').textContent =
-    `${currentIndex+1} of ${kriyas.length}`;
-
-  const pct = total > 0 ? ((total - remaining) / total) * 100 : 0;
-  document.getElementById('progressBar').style.width = pct + '%';
-
-  const urgent = remaining <= 10 && remaining > 0;
-  document.getElementById('timeBig').classList.toggle('urgent', urgent);
+  document.getElementById('kriyaIndex').textContent = `${currentIndex+1} of ${kriyas.length}`;
+  document.getElementById('progressBar').style.width = (total > 0 ? ((total - remaining) / total) * 100 : 0) + '%';
+  document.getElementById('timeBig').classList.toggle('urgent', remaining <= 10 && remaining > 0);
 }
 
-// ─── Render list ──────────────────────────────────────────
+function pad(n) { return String(n).padStart(2,'0'); }
+
+// ── Render list ───────────────────────────────────────────
 function renderList() {
   const list = document.getElementById('kriyaList');
   list.innerHTML = '';
   kriyas.forEach((k, i) => {
     const el = document.createElement('div');
     el.className = 'kriya-item' + (running && i === currentIndex ? ' active-kriya' : '');
+    el.dataset.index = String(i);
 
-    const mins = String(parseInt(k.mins) || 0).padStart(2,'0');
-    const secs = String(parseInt(k.secs) || 0).padStart(2,'0');
+    const nameIn = document.createElement('input');
+    nameIn.type = 'text';
+    nameIn.placeholder = 'Kriya name…';
+    nameIn.value = k.name;
+    nameIn.addEventListener('input', () => { kriyas[i].name = nameIn.value; updateDisplay(); });
 
-    el.innerHTML = `
-      <span class="drag-handle">⠿</span>
-      <input type="text" placeholder="Kriya name…" value="${escHtml(k.name)}" 
-             oninput="kriyas[${i}].name='${escJs()}';updateDisplay();updateTotal()" 
-             onchange="kriyas[${i}].name=this.value;updateDisplay();updateTotal()">
-      <div class="time-inputs">
-        <input type="number" min="0" max="99" value="${mins}" 
-               onchange="kriyas[${i}].mins=this.value;updateDisplay();updateTotal()">
-        <span class="sep">:</span>
-        <input type="number" min="0" max="59" value="${secs}" 
-               onchange="kriyas[${i}].secs=this.value;updateDisplay();updateTotal()">
-      </div>
-      <button class="remove-btn" onclick="removeKriya(${i})">✕</button>
-    `;
+    const mIn = document.createElement('input');
+    mIn.type = 'number'; mIn.min = '0'; mIn.max = '99';
+    mIn.value = pad(parseInt(k.mins)||0);
+    mIn.dataset.field = 'mins';
+    mIn.addEventListener('change', () => { kriyas[i].mins = mIn.value; updateDisplay(); updateTotal(); });
 
-    // Fix the name binding properly
-    const nameInput = el.querySelector('input[type=text]');
-    nameInput.addEventListener('input', function() {
-      kriyas[i].name = this.value;
-      updateDisplay();
-    });
+    const sIn = document.createElement('input');
+    sIn.type = 'number'; sIn.min = '0'; sIn.max = '59';
+    sIn.value = pad(parseInt(k.secs)||0);
+    sIn.dataset.field = 'secs';
+    sIn.addEventListener('change', () => { kriyas[i].secs = sIn.value; updateDisplay(); updateTotal(); });
 
+    const sep = document.createElement('span');
+    sep.className = 'sep'; sep.textContent = ':';
+
+    const timeWrap = document.createElement('div');
+    timeWrap.className = 'time-inputs';
+    timeWrap.append(mIn, sep, sIn);
+
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '⠿';
+    handle.setAttribute('aria-label', 'drag to reorder');
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = '✕';
+    removeBtn.addEventListener('click', () => removeKriya(i));
+
+    el.append(handle, nameIn, timeWrap, removeBtn);
+    attachDrag(handle, i);
     list.appendChild(el);
   });
-  updateTotal();
 
-  // If not running, reset display to first kriya
+  updateTotal();
   if (!running && remaining === 0 && kriyas.length > 0) {
     const k0 = kriyas[0];
-    const total = getTotalSeconds(k0);
-    const m = Math.floor(total / 60), s = total % 60;
-    document.getElementById('timeBig').textContent =
-      String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    const tot = getTotalSeconds(k0);
+    document.getElementById('timeBig').textContent = pad(Math.floor(tot/60)) + ':' + pad(tot%60);
     document.getElementById('currentKriyaName').textContent = k0.name || 'Kriya 1';
     document.getElementById('kriyaIndex').textContent = `1 of ${kriyas.length}`;
     document.getElementById('progressBar').style.width = '0%';
   }
 }
 
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-}
-function escJs() { return ''; } // placeholder, real binding done in addEventListener
+// ── Drag & Drop — touch + mouse ──────────────────────────
+let drag = {
+  active: false,
+  srcIndex: -1,
+  overIndex: -1,
+  ghost: null,
+  offsetY: 0,
+};
 
-function addKriya() {
-  kriyas.push({ name: '', mins: 5, secs: 0 });
-  renderList();
-  // Focus the new name input
-  const items = document.querySelectorAll('.kriya-item');
-  const last = items[items.length - 1];
-  if (last) last.querySelector('input[type=text]').focus();
+function getItemEls() {
+  return Array.from(document.querySelectorAll('#kriyaList .kriya-item'));
 }
 
-function removeKriya(i) {
-  if (kriyas.length === 1) return; // keep at least one
-  kriyas.splice(i, 1);
-  if (currentIndex >= kriyas.length) currentIndex = kriyas.length - 1;
-  renderList();
-  if (!running && remaining === 0) {
-    remaining = 0;
-    updateDisplay();
+function attachDrag(handle, index) {
+  // Touch
+  handle.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+    const t = e.touches[0];
+    startDrag(index, t.clientX, t.clientY);
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', (e) => {
+    if (!drag.active) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    moveDrag(t.clientX, t.clientY);
+  }, { passive: false });
+
+  handle.addEventListener('touchend', () => { if (drag.active) dropDrag(); });
+  handle.addEventListener('touchcancel', () => { if (drag.active) cancelDrag(); });
+
+  // Mouse
+  handle.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    startDrag(index, e.clientX, e.clientY);
+    document.addEventListener('mousemove', onDocMouseMove);
+    document.addEventListener('mouseup', onDocMouseUp);
+  });
+}
+
+function onDocMouseMove(e) { if (drag.active) moveDrag(e.clientX, e.clientY); }
+function onDocMouseUp()    {
+  document.removeEventListener('mousemove', onDocMouseMove);
+  document.removeEventListener('mouseup', onDocMouseUp);
+  if (drag.active) dropDrag();
+}
+
+function startDrag(index, cx, cy) {
+  drag.active   = true;
+  drag.srcIndex = index;
+  drag.overIndex = index;
+
+  const items = getItemEls();
+  const srcEl = items[index];
+  const rect  = srcEl.getBoundingClientRect();
+  drag.offsetY = cy - rect.top;
+
+  srcEl.classList.add('dragging');
+
+  // Build ghost
+  const ghost = document.getElementById('drag-ghost');
+  ghost.style.display = 'flex';
+  ghost.style.width   = rect.width + 'px';
+  ghost.style.top     = (cy - drag.offsetY) + 'px';
+  ghost.style.left    = rect.left + 'px';
+  ghost.textContent   = '⠿  ' + (kriyas[index].name || `Kriya ${index+1}`);
+  drag.ghost = ghost;
+}
+
+function moveDrag(cx, cy) {
+  if (!drag.ghost) return;
+  drag.ghost.style.top = (cy - drag.offsetY) + 'px';
+
+  // Find which item we're hovering
+  const items = getItemEls();
+  let overIdx = drag.srcIndex;
+  items.forEach((el, i) => {
+    const r = el.getBoundingClientRect();
+    if (cy > r.top && cy < r.bottom) overIdx = i;
+    el.classList.remove('drag-over');
+  });
+  drag.overIndex = overIdx;
+  if (overIdx !== drag.srcIndex) items[overIdx]?.classList.add('drag-over');
+}
+
+function dropDrag() {
+  const items = getItemEls();
+  items.forEach(el => el.classList.remove('dragging', 'drag-over'));
+  document.getElementById('drag-ghost').style.display = 'none';
+
+  const from = drag.srcIndex;
+  const to   = drag.overIndex;
+  drag.active = false;
+
+  if (from !== to && to >= 0) {
+    const moved = kriyas.splice(from, 1)[0];
+    kriyas.splice(to, 0, moved);
+    // Keep currentIndex correct
+    if (running) {
+      if (from === currentIndex) currentIndex = to;
+      else if (from < currentIndex && to >= currentIndex) currentIndex--;
+      else if (from > currentIndex && to <= currentIndex) currentIndex++;
+    }
+    renderList();
   }
 }
 
-function updateTotal() {
-  const total = kriyas.reduce((acc, k) => acc + getTotalSeconds(k), 0);
-  const m = Math.floor(total / 60), s = total % 60;
-  document.getElementById('totalTime').textContent =
-    s > 0 ? `${m} min ${s} sec` : `${m} min`;
+function cancelDrag() {
+  getItemEls().forEach(el => el.classList.remove('dragging','drag-over'));
+  document.getElementById('drag-ghost').style.display = 'none';
+  drag.active = false;
 }
 
-// ─── Init ─────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────
+function addKriya() {
+  kriyas.push({ name: '', mins: 5, secs: 0 });
+  renderList();
+  const items = document.querySelectorAll('.kriya-item');
+  items[items.length-1]?.querySelector('input[type=text]').focus();
+}
+
+function removeKriya(i) {
+  if (kriyas.length === 1) return;
+  kriyas.splice(i, 1);
+  if (currentIndex >= kriyas.length) currentIndex = kriyas.length - 1;
+  renderList();
+}
+
+function updateTotal() {
+  const total = kriyas.reduce((a,k) => a + getTotalSeconds(k), 0);
+  const m = Math.floor(total/60), s = total%60;
+  document.getElementById('totalTime').textContent = s > 0 ? `${m} min ${s} sec` : `${m} min`;
+}
+
+// ── Init ──────────────────────────────────────────────────
 renderList();
 </script>
 </body>
