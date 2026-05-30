@@ -372,18 +372,24 @@
       if (!soundEnabled) return;
       const context = ensureAudio();
       const start = context.currentTime;
-      [0, .22, .44].forEach(offset => {
+      const masterGain = context.createGain();
+      masterGain.gain.setValueAtTime(.95, start);
+      masterGain.gain.setValueAtTime(.95, start + .92);
+      masterGain.gain.exponentialRampToValueAtTime(.001, start + 1);
+      masterGain.connect(context.destination);
+      [0, .16, .32, .48, .64, .80].forEach((offset, index) => {
         const oscillator = context.createOscillator();
         const gain = context.createGain();
-        oscillator.frequency.setValueAtTime(740, start + offset);
-        oscillator.frequency.exponentialRampToValueAtTime(980, start + offset + .13);
+        oscillator.type = "square";
+        oscillator.frequency.setValueAtTime(index % 2 ? 1160 : 880, start + offset);
         gain.gain.setValueAtTime(0, start + offset);
-        gain.gain.linearRampToValueAtTime(.25, start + offset + .02);
-        gain.gain.exponentialRampToValueAtTime(.001, start + offset + .18);
+        gain.gain.linearRampToValueAtTime(.7, start + offset + .015);
+        gain.gain.setValueAtTime(.7, start + offset + .12);
+        gain.gain.exponentialRampToValueAtTime(.001, start + offset + .15);
         oscillator.connect(gain);
-        gain.connect(context.destination);
+        gain.connect(masterGain);
         oscillator.start(start + offset);
-        oscillator.stop(start + offset + .2);
+        oscillator.stop(start + offset + .16);
       });
     }
 
